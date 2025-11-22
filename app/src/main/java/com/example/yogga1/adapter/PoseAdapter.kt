@@ -15,9 +15,10 @@ class PoseAdapter(
 ) : RecyclerView.Adapter<PoseAdapter.PoseViewHolder>() {
 
     class PoseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val poseImage: ImageView = itemView.findViewById(R.id.poseImage)
         val poseName: TextView = itemView.findViewById(R.id.poseName)
+        val sanskritName: TextView = itemView.findViewById(R.id.sanskritName)
         val poseDifficulty: TextView = itemView.findViewById(R.id.poseDifficulty)
+        val poseImage: ImageView = itemView.findViewById(R.id.poseImage)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PoseViewHolder {
@@ -29,13 +30,17 @@ class PoseAdapter(
     override fun onBindViewHolder(holder: PoseViewHolder, position: Int) {
         val pose = poses[position]
         holder.poseName.text = pose.name
+        holder.sanskritName.text = pose.sanskritName
         holder.poseDifficulty.text = pose.difficulty
         holder.poseImage.setImageResource(pose.imageResource)
 
+        // ВАЖНО: ДОБАВЬ ОБРАБОТЧИК КЛИКОВ!
         holder.itemView.setOnClickListener {
             onItemClick(pose)
         }
     }
 
-    override fun getItemCount() = poses.size
+    override fun getItemCount(): Int {
+        return poses.size
+    }
 }

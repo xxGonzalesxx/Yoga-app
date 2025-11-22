@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         recyclerView = findViewById(R.id.recyclerView)
-        poseAdapter = PoseAdapter(DataProvider.getYogaPoses()) { pose ->
+        poseAdapter = PoseAdapter(DataProvider.yogaPoses) { pose ->
             val intent = Intent(this, PoseDetailActivity::class.java)
             intent.putExtra("pose", pose)
             startActivity(intent)

@@ -2,16 +2,13 @@ package com.example.yogga1.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.VideoView
 import com.example.yogga1.R
 import com.example.yogga1.model.YogaPose
 import com.example.yogga1.service.AudioManager
-import com.example.yogga1.service.VideoPlayerHelper
 
 class PoseDetailActivity : AppCompatActivity() {
 
@@ -27,7 +24,10 @@ class PoseDetailActivity : AppCompatActivity() {
         if (pose != null) {
             setupPoseDetails(pose)
             setupAudioButton(pose)
-            setupVideoButton(pose)
+            setupVideoButton(pose)  // Исправлено: убрал "Simple"
+        } else {
+            Toast.makeText(this, "Ошибка загрузки позы", Toast.LENGTH_SHORT).show()
+            finish()
         }
     }
 
@@ -35,14 +35,14 @@ class PoseDetailActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.poseName).text = pose.name
         findViewById<TextView>(R.id.sanskritName).text = pose.sanskritName
         findViewById<TextView>(R.id.poseDescription).text = pose.description
-        findViewById<TextView>(R.id.poseDifficulty).text = "Уровень: ${pose.difficulty}"
-        // Убрали ImageView так как теперь используем VideoView
+        findViewById<TextView>(R.id.poseDifficulty).text = pose.difficulty
     }
 
     private fun setupAudioButton(pose: YogaPose) {
         val playButton = findViewById<Button>(R.id.playAudioButton)
         playButton.setOnClickListener {
             audioManager.playAudio(this, pose.audioResource)
+            Toast.makeText(this, "Аудио инструкция", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -51,37 +51,15 @@ class PoseDetailActivity : AppCompatActivity() {
         val videoView = findViewById<VideoView>(R.id.poseVideo)
 
         playVideoButton.setOnClickListener {
-            println("🎯 Нажата кнопка видео! ID ресурса: ${pose.videoResource}")
-
-            // ТЕСТ 1: Пробуем твое видео
-            val videoPath = "android.resource://${packageName}/${pose.videoResource}"
-            println("📹 Путь к видео: $videoPath")
-
-            videoView.setVideoPath(videoPath)
-
-            videoView.setOnPreparedListener { mp ->
-                println("✅ УСПЕХ! Видео готово к воспроизведению!")
-                videoView.visibility = View.VISIBLE
+            try {
+                // ПРОСТОЙ РАБОЧИЙ ВАРИАНТ
+                val videoPath = "android.resource://${packageName}/${pose.videoResource}"
+                videoView.setVideoPath(videoPath)
                 videoView.start()
-                Toast.makeText(this, "Видео запущено!", Toast.LENGTH_SHORT).show()
-            }
-
-            videoView.setOnErrorListener { mp, what, extra ->
-                println("❌ ОШИБКА ВИДЕО: what=$what, extra=$extra")
-
-                // ТЕСТ 2: Пробуем онлайн видео для сравнения
-                println("🔄 Пробую онлайн видео...")
-                val testVideo =
-                    "https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"
-                videoView.setVideoPath(testVideo)
-
-                videoView.setOnPreparedListener { mp ->
-                    println("✅ ОНЛАЙН ВИДЕО РАБОТАЕТ! Значит проблема в твоих файлах")
-                    videoView.start()
-                    Toast.makeText(this, "Онлайн видео работает!", Toast.LENGTH_LONG).show()
-                }
-
-                true
+                videoView.visibility = android.view.View.VISIBLE
+                Toast.makeText(this, "Видео запущено", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Toast.makeText(this, "Ошибка видео", Toast.LENGTH_SHORT).show()
             }
         }
     }
